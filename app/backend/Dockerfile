@@ -1,39 +1,35 @@
-# ================================================================
-#  Backend — Express / Node.js 18
-#  Multi-stage build, utilisateur non-root
-# ================================================================
+# Backend Dockerfile
+FROM node:18-alpine
 
-# ── Stage 1 : Dépendances ─────────────────────────────────────
-FROM node:18-alpine AS deps
+# Set working directory
 WORKDIR /app
 
+# Install dependencies
 COPY package*.json ./
-RUN npm ci --only=production && npm cache clean --force
+RUN npm ci --only=production
 
-# ── Stage 2 : Runner ──────────────────────────────────────────
-FROM node:18-alpine AS runner
-WORKDIR /app
+# Copy source code
+COPY . .
 
-ARG NODE_ENV=production
-ENV NODE_ENV=$NODE_ENV
-ENV PORT=3001
+# Create necessary directories
+RUN mkdir -p uploads logs
 
-# Utilisateur non-root (déjà dans le Dockerfile d'origine, on garde)
-RUN addgroup -g 1001 -S nodejs \
- && adduser  -S nodejs -u 1001 -G nodejs
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nodejs -u 1001
 
-# Copie deps de production uniquement
-COPY --from=deps /app/node_modules ./node_modules
-COPY --chown=nodejs:nodejs . .
+# Change ownership of the app directory
+RUN chown -R nodejs:nodejs /app
 
-# Répertoires nécessaires
-RUN mkdir -p uploads logs && chown -R nodejs:nodejs uploads logs
-
+# Switch to non-root user
 USER nodejs
 
+# Expose port
 EXPOSE 3001
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD node healthcheck.js
 
-CMD ["node", "src/app.js"]
+# Start the application
+CMD ["npm", "start"]
