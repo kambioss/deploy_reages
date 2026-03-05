@@ -1,37 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-import bcrypt from 'bcryptjs';
+
+const API_URL = process.env.API_URL || 'http://localhost:3001';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { nom, prenom, email, password, pays, fonction, secteurActivite } = body;
+    // Map frontend fields to backend fields
+    const backendBody = {
+      email: body.email,
+      password: body.password,
+      first_name: body.prenom || body.first_name || '',
+      last_name: body.nom || body.last_name || '',
+      country: body.pays || body.country || '',
+      function: body.fonction || body.function || '',
+      sector: body.secteurActivite || body.sector || '',
+      phone: body.phone || '',
+      organization: body.organization || '',
+    };
 
-    if (!nom || !prenom || !email || !password || !pays || !fonction || !secteurActivite) {
-      return NextResponse.json({ error: 'Tous les champs sont requis' }, { status: 400 });
-    }
-
-    const existing = await db.user.findUnique({ where: { email } });
-    if (existing) {
-      return NextResponse.json({ error: 'Email déjà utilisé' }, { status: 409 });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 12);
-    
-    // First user becomes admin
-    const userCount = await db.user.count();
-    const role = userCount === 0 ? 'admin' : 'student';
-
-    const user = await db.user.create({
-      data: { nom, prenom, email, password: hashedPassword, pays, fonction, secteurActivite, role }
+    const backendRes = await fetch(`${API_URL}/api/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(backendBody),
     });
 
-    return NextResponse.json({
-      message: 'Compte créé avec succès',
-      user: { id: user.id, nom: user.nom, prenom: user.prenom, email: user.email, role: user.role }
-    }, { status: 201 });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
+    const data = await backendRes.json();
+    return NextResponse.json(data, { status: backendRes.status });
+  } catch (err: any) {
+    console.error('[REGISTER PROXY ERROR]', err?.message);
+    return NextResponse.json(
+      { error: 'Impossible de contacter le serveur. Vérifiez que le backend est démarré.' },
+      { status: 503 }
+    );
   }
 }

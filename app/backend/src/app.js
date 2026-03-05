@@ -3,31 +3,34 @@ const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
-const session = require('express-session');
-const Keycloak = require('keycloak-connect');
 const config = require('./config');
 const database = require('./config/database');
 const logger = require('./utils/logger');
 
-// Import routes
-const authRoutes = require('./routes/auth');
-const userRoutes = require('./routes/users');
+// Routes
+const authRoutes    = require('./routes/auth');
+const userRoutes    = require('./routes/users');
 const articleRoutes = require('./routes/articles');
-const eventRoutes = require('./routes/events');
+const eventRoutes   = require('./routes/events');
 const projectRoutes = require('./routes/projects');
 const categoryRoutes = require('./routes/categories');
-const tagRoutes = require('./routes/tags');
+const tagRoutes     = require('./routes/tags');
 const commentRoutes = require('./routes/comments');
-const mediaRoutes = require('./routes/media');
-const uploadRoutes = require('./routes/upload');
+const mediaRoutes   = require('./routes/media');
+const uploadRoutes  = require('./routes/upload');
+const actualitesRoutes = require('./routes/actualites');
+const coursRoutes      = require('./routes/cours');
+const enrollmentsRoutes = require('./routes/enrollments');
+const opportunitesRoutes = require('./routes/opportunites');
+const appelsOffresRoutes = require('./routes/appels-offres');
 
-// Create Express app
+const { authenticate, requireAdmin } = require('./middleware/auth');
+
 const app = express();
 
-// Trust proxy for rate limiting
 app.set('trust proxy', 1);
 
-// Security middleware
+// Sécurité
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -40,174 +43,149 @@ app.use(helmet({
 }));
 
 // Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: {
-    error: 'Too many requests from this IP, please try again later.'
-  }
-});
-app.use('/api/', limiter);
+app.use('/api/', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  message: { error: 'Trop de requêtes, réessayez plus tard.' }
+}));
 
-// Compression
 app.use(compression());
-
-// CORS configuration
 app.use(cors(config.cors));
-
-// Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Session configuration for Keycloak
-const memoryStore = new session.MemoryStore();
-app.use(session(config.session));
-
-// Keycloak configuration
-const keycloak = new Keycloak({
-  store: memoryStore
-}, config.keycloak);
-
-app.use(keycloak.middleware({
-  logout: '/logout',
-  admin: '/'
-}));
-
-// Request logging middleware
+// Logging
 app.use((req, res, next) => {
-  logger.info(`${req.method} ${req.path}`, {
-    ip: req.ip,
-    userAgent: req.get('User-Agent'),
-    timestamp: new Date().toISOString()
-  });
+  logger.info(`${req.method} ${req.path}`, { ip: req.ip });
   next();
 });
 
-// Health check endpoint
+// Health check
 app.get('/health', (req, res) => {
-  res.json({
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: config.server.env
-  });
+  res.json({ status: 'OK', timestamp: new Date().toISOString(), uptime: process.uptime() });
 });
 
-// API routes
-app.use('/api/auth', authRoutes);
-app.use('/api/users', keycloak.protect(), userRoutes);
-app.use('/api/articles', articleRoutes);
-app.use('/api/events', eventRoutes);
-app.use('/api/projects', projectRoutes);
+// API routes — auth publique, le reste protégé
+app.use('/api/auth',       authRoutes);
+app.use('/api/users',      userRoutes);         // middleware authenticate inclus dans la route
+app.use('/api/articles',   articleRoutes);
+// /api/events is now registered below with full CRUD
+// /api/projects is now registered below with full CRUD
 app.use('/api/categories', categoryRoutes);
-app.use('/api/tags', tagRoutes);
-app.use('/api/comments', commentRoutes);
-app.use('/api/media', keycloak.protect(), mediaRoutes);
-app.use('/api/upload', keycloak.protect(), uploadRoutes);
+app.use('/api/tags',       tagRoutes);
+app.use('/api/comments',   commentRoutes);
+app.use('/api/media',      authenticate, mediaRoutes);
+app.use('/api/upload',     authenticate, uploadRoutes);
+app.use('/api/actualites',  actualitesRoutes);
+app.use('/api/cours',       coursRoutes);
+app.use('/api/enrollments', authenticate, enrollmentsRoutes);
+app.use('/api/opportunites',  opportunitesRoutes);
+app.use('/api/appels-offres', appelsOffresRoutes);
+// Re-register events & projects with full CRUD
+app.use('/api/events',    require('./routes/events'));
+app.use('/api/projets',   require('./routes/projects'));
 
-// Public routes (no authentication required)
+// Stats publiques
 app.get('/api/public/stats', async (req, res) => {
   try {
-    const result = await database.query('SELECT get_database_stats() as stats');
-    res.json(result.rows[0].stats);
-  } catch (error) {
-    logger.error('Error fetching stats:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    const [users, articles, events, projects] = await Promise.all([
+      database.query('SELECT COUNT(*) FROM users WHERE is_active = true'),
+      database.query('SELECT COUNT(*) FROM articles WHERE is_published = true'),
+      database.query('SELECT COUNT(*) FROM events'),
+      database.query('SELECT COUNT(*) FROM projects'),
+    ]);
+    res.json({
+      users: parseInt(users.rows[0].count),
+      articles: parseInt(articles.rows[0].count),
+      events: parseInt(events.rows[0].count),
+      projects: parseInt(projects.rows[0].count),
+    });
+  } catch (err) {
+    logger.error('Stats error:', err);
+    res.status(500).json({ error: 'Erreur serveur' });
   }
 });
 
-// Static files for uploads
+// Fichiers uploadés
 app.use('/uploads', express.static('uploads'));
 
-// 404 handler
+// 404
 app.use('*', (req, res) => {
-  res.status(404).json({
-    error: 'Not Found',
-    message: `Route ${req.originalUrl} not found`
-  });
+  res.status(404).json({ error: 'Route non trouvée', path: req.originalUrl });
 });
 
-// Global error handler
-app.use((error, req, res, next) => {
-  logger.error('Unhandled error:', error);
-  
-  // Keycloak errors
-  if (error.name === 'UnauthorizedError') {
-    return res.status(401).json({
-      error: 'Unauthorized',
-      message: 'Authentication required'
-    });
+// Gestion globale des erreurs
+app.use((err, req, res, next) => {
+  logger.error('Erreur non gérée:', err);
+  if (err.code?.startsWith('23')) {
+    return res.status(400).json({ error: 'Données invalides' });
   }
-  
-  // Validation errors
-  if (error.name === 'ValidationError') {
-    return res.status(400).json({
-      error: 'Validation Error',
-      message: error.message
-    });
-  }
-  
-  // Database errors
-  if (error.code && error.code.startsWith('23')) {
-    return res.status(400).json({
-      error: 'Database Error',
-      message: 'Invalid data provided'
-    });
-  }
-  
-  // Default error
   res.status(500).json({
-    error: 'Internal Server Error',
-    message: config.server.env === 'development' ? error.message : 'Something went wrong'
+    error: 'Erreur serveur',
+    message: config.server.env === 'development' ? err.message : undefined
   });
 });
 
-// Graceful shutdown
-process.on('SIGTERM', async () => {
-  logger.info('SIGTERM received, shutting down gracefully');
-  await database.close();
-  process.exit(0);
-});
-
-process.on('SIGINT', async () => {
-  logger.info('SIGINT received, shutting down gracefully');
-  await database.close();
-  process.exit(0);
-});
-
-// Start server
-const startServer = async () => {
-  try {
-    // Test database connection
-    await database.query('SELECT NOW()');
-    logger.info('Database connection established');
-    
-    // Start server
-    app.listen(config.server.port, config.server.host, () => {
-      logger.info(`Server running on ${config.server.host}:${config.server.port}`);
-      logger.info(`Environment: ${config.server.env}`);
-      logger.info(`API documentation: http://${config.server.host}:${config.server.port}/api`);
-    });
-  } catch (error) {
-    logger.error('Failed to start server:', error);
-    process.exit(1);
-  }
-};
-
-// Handle uncaught exceptions
-process.on('uncaughtException', (error) => {
-  logger.error('Uncaught Exception:', error);
-  process.exit(1);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  process.exit(1);
-});
+// Arrêt propre
+process.on('SIGTERM', async () => { await database.close(); process.exit(0); });
+process.on('SIGINT',  async () => { await database.close(); process.exit(0); });
+process.on('uncaughtException',    (err) => { logger.error('uncaughtException:', err);  process.exit(1); });
+process.on('unhandledRejection', (reason) => { logger.error('unhandledRejection:', reason); process.exit(1); });
 
 module.exports = app;
 
-// Start server if this file is run directly
+// ─── Démarrage ────────────────────────────────────────────────────────────────
 if (require.main === module) {
-  startServer();
+  (async () => {
+    try {
+      await database.query('SELECT NOW()');
+      logger.info('Base de données connectée');
+
+      await seedAdmin();
+
+      app.listen(config.server.port, config.server.host, () => {
+        logger.info(`Serveur démarré sur http://${config.server.host}:${config.server.port}`);
+        logger.info(`Environnement : ${config.server.env}`);
+      });
+    } catch (err) {
+      logger.error('Échec du démarrage:', err);
+      process.exit(1);
+    }
+  })();
+}
+
+/**
+ * Crée l'administrateur par défaut si aucun utilisateur n'existe
+ */
+async function seedAdmin() {
+  const bcrypt = require('bcryptjs');
+  const User = require('./models/User');
+
+  const count = await User.count();
+  if (count > 0) {
+    logger.info(`Base déjà peuplée (${count} utilisateur(s)) — skip seedAdmin`);
+    return;
+  }
+
+const { email, password, firstName, lastName, country } = config.admin;  const password_hash = await bcrypt.hash(password, 12);
+
+const admin = await User.create({
+  email,
+  password_hash,
+  first_name: firstName,
+  last_name: lastName,
+  country,          // ✅ ICI
+  phone: '',
+  function: '',
+  sector: '',
+  organization: '',
+  bio: '',
+  avatar_url: '',
+  role: 'admin'
+});
+
+  logger.info(`✅ Admin par défaut créé : ${admin.email}`);
+  logger.info(`   Email    : ${email}`);
+  logger.info(`   Password : ${password}`);
+  logger.info(`   ⚠️  Changez ce mot de passe après la première connexion !`);
 }

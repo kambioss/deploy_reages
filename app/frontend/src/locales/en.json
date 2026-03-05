@@ -1,0 +1,170 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "mission": "Mission",
+    "vision": "Vision",
+    "values": "Values",
+    "whyJoin": "Why Join",
+    "network": "Network",
+    "members": "Members",
+    "organisations": "Organisations",
+    "partners": "Partners",
+    "news": "News",
+    "events": "Events",
+    "activities": "Activities",
+    "projects": "Projects",
+    "allProjects": "All projects",
+    "ongoingProjects": "Ongoing projects",
+    "completedProjects": "Completed projects",
+    "projectCalls": "Project calls",
+    "resources": "Resources",
+    "publications": "Publications",
+    "reports": "Reports",
+    "training": "Training",
+    "career": "Career",
+    "tenders": "Tenders",
+    "opportunities": "Opportunities",
+    "contact": "Contact",
+    "login": "Login",
+    "register": "Sign up",
+    "admin": "Admin",
+    "mySpace": "My space",
+    "logout": "Logout",
+    "search": "Search..."
+  },
+  "hero": {
+    "badge": "Pan-African Network",
+    "title": "African geomatics",
+    "titleAccent": "at the heart of the future",
+    "subtitle": "Uniting talents, accelerating research, and deploying geospatial technologies for the sovereign and sustainable development of Africa.",
+    "ctaPrimary": "Join the network",
+    "ctaSecondary": "Discover our activities"
+  },
+  "stats": {
+    "members": "Active members",
+    "countries": "Countries covered",
+    "projects": "Projects completed",
+    "publications": "Publications"
+  },
+  "expertise": {
+    "sectionLabel": "Areas of Expertise",
+    "sectionTitle": "Geospatial solutions for African challenges",
+    "sectionDesc": "Cutting-edge technologies applied to African realities for informed territorial development.",
+    "items": [
+      {
+        "title": "Mapping & GIS",
+        "description": "Advanced geographic information systems for precise mapping and territorial decision support."
+      },
+      {
+        "title": "Satellite Remote Sensing",
+        "description": "Monitoring and analysis of the environment and land use through space technologies."
+      },
+      {
+        "title": "Forest Monitoring",
+        "description": "Decision support for sustainable management and protection of African forest ecosystems."
+      },
+      {
+        "title": "Climate Surveillance",
+        "description": "Territorial governance and decision support facing drought risks and climate change."
+      },
+      {
+        "title": "Flood Management",
+        "description": "Decision support and risk prevention for territorial management facing floods."
+      },
+      {
+        "title": "Smart Agriculture",
+        "description": "Digital solutions for sustainable and optimized agriculture through satellite data."
+      }
+    ]
+  },
+  "about": {
+    "sectionLabel": "About us",
+    "title": "A pan-African network dedicated to geomatics",
+    "p1": "REAAGESS (Réseau Africain des Acteurs de la Géomatique et des Sciences Spatiales) is a pan-African initiative dedicated to promoting spatial sciences and geomatics in Africa.",
+    "p2": "We unite young professionals, researchers and enthusiasts in the geospatial field to foster collaboration, knowledge sharing and innovation at the continental scale.",
+    "p3": "Our activities include training sector players, publishing research work, and developing innovative projects in geomatics and spatial sciences.",
+    "visionLabel": "Our Vision",
+    "visionText": "To place spatial technologies and geospatial intelligence at the service of sustainable development, territorial governance and scientific excellence in Africa.",
+    "cta": "Learn more"
+  },
+  "vmv": {
+    "vision": {
+      "title": "Our Vision",
+      "text": "To be a pan-African reference network in spatial sciences and geomatics, capable of uniting talents and contributing to the sustainable and sovereign development of Africa through geospatial technologies."
+    },
+    "mission": {
+      "title": "Our Mission",
+      "text": "To unite young Africans in spatial sciences and geomatics, promote innovation, stimulate research, train in geospatial intelligence and support major African projects in space engineering."
+    },
+    "values": {
+      "title": "Our Values",
+      "items": [
+        "Collaboration and Solidarity",
+        "Knowledge sharing",
+        "Scientific excellence",
+        "Innovation and Creativity",
+        "Responsibility and Integrity",
+        "Sustainable development of Africa"
+      ]
+    }
+  },
+  "whyJoin": {
+    "sectionLabel": "Why join",
+    "title": "Be part of the African geospatial movement",
+    "subtitle": "Discover the exclusive benefits of the REAAGESS network",
+    "cta": "Learn more",
+    "items": [
+      {
+        "title": "Data access",
+        "description": "Each member benefits from access to geospatial data mobilized by the network for their projects and research."
+      },
+      {
+        "title": "Thematic hubs",
+        "description": "Be part of a hub dedicated to your specialty and collaborate with domain experts."
+      },
+      {
+        "title": "Skills exchange",
+        "description": "Participate in training courses, webinars and workshops to enrich your knowledge."
+      },
+      {
+        "title": "Annual meetings",
+        "description": "Attend in-person activities in each member country, on a rotating basis."
+      },
+      {
+        "title": "In-depth discussions",
+        "description": "Contribute to rigorous exchanges on geospatial intelligence and innovative technologies."
+      },
+      {
+        "title": "African collaboration",
+        "description": "Work with enthusiasts and experts at the continental scale to stimulate innovation."
+      }
+    ]
+  },
+  "ctaBanner": {
+    "title": "Ready to join the network?",
+    "subtitle": "Join hundreds of African professionals advancing geomatics across the continent.",
+    "ctaPrimary": "Join for free",
+    "ctaSecondary": "Contact us"
+  },
+  "footer": {
+    "about": "African Network of Geomatics and Space Sciences Actors, dedicated to promoting geospatial technologies for sustainable development in Africa.",
+    "quickLinks": "Quick links",
+    "expertise": "Areas of expertise",
+    "contact": "Contact",
+    "newsletter": "Newsletter",
+    "newsletterDesc": "Subscribe to receive our news",
+    "newsletterPlaceholder": "Your email",
+    "subscribe": "Subscribe",
+    "rights": "All rights reserved.",
+    "legal": "Legal notice",
+    "privacy": "Privacy policy",
+    "cookies": "Cookies"
+  },
+  "common": {
+    "learnMore": "Learn more",
+    "seeAll": "See all",
+    "loading": "Loading...",
+    "error": "An error occurred"
+  }
+}

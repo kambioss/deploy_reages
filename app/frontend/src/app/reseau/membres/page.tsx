@@ -11,7 +11,9 @@ export default function MembresPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPays, setSelectedPays] = useState("Tous");
 
-  const membres = [
+  const membres = [];
+
+  /*   const membres = [
     {
       id: 1,
       nom: "Dr. Awa Diop",
@@ -72,8 +74,7 @@ export default function MembresPage() {
       specialite: "Gouvernance de l'eau",
       avatar: "JPM",
     },
-  ];
-
+  ];*/
   const paysList = ["Tous", ...Array.from(new Set(membres.map((m) => m.pays)))];
 
   const filteredMembres = membres.filter((membre) => {

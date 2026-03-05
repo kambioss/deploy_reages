@@ -8,7 +8,12 @@ import Footer from "@/components/Footer";
 import LayoutWrapper from "@/components/LayoutWrapper";
 
 const RapportsPage = () => {
-  const rapports = [
+  const rapports = [];
+
+  const categories = [];
+
+  /*
+   const rapports = [
     {
       id: 1,
       title: "Rapport Annuel 2024 - REAAGESS",
@@ -79,7 +84,7 @@ const RapportsPage = () => {
     { name: "Recherche", count: 1, color: "bg-orange-100 text-orange-700" },
     { name: "Formation", count: 1, color: "bg-red-100 text-red-700" },
   ];
-
+*/
   const getCategoryColor = (category: string) => {
     const cat = categories.find((c) => c.name === category);
     return cat ? cat.color : "bg-gray-100 text-gray-700";

@@ -1,16 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/auth';
-import { db } from '@/lib/db';
+import { mapUser } from '@/lib/user-mapper';
+
+const API_URL = process.env.API_URL || 'http://localhost:3001';
 
 export async function GET(request: NextRequest) {
-  const payload = requireAuth(request);
-  if (!payload) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
+  try {
+    const cookieToken = request.cookies.get('token')?.value;
+    const authHeader = request.headers.get('authorization');
+    const token = cookieToken || (authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null);
 
-  const user = await db.user.findUnique({
-    where: { id: payload.userId },
-    select: { id: true, nom: true, prenom: true, email: true, pays: true, fonction: true, secteurActivite: true, role: true, isActive: true, createdAt: true }
-  });
+    if (!token) {
+      return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
+    }
 
-  if (!user) return NextResponse.json({ error: 'Utilisateur non trouvé' }, { status: 404 });
-  return NextResponse.json({ user });
+    const backendRes = await fetch(`${API_URL}/api/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const data = await backendRes.json();
+
+    if (!backendRes.ok) {
+      return NextResponse.json(data, { status: backendRes.status });
+    }
+
+    return NextResponse.json({ user: mapUser(data.user) }, { status: 200 });
+  } catch (err: any) {
+    console.error('[ME PROXY ERROR]', err?.message);
+    return NextResponse.json(
+      { error: 'Impossible de contacter le serveur.' },
+      { status: 503 }
+    );
+  }
 }

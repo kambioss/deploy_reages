@@ -134,8 +134,7 @@ class ArticleController {
       }
 
       // Get author ID from authenticated user
-      const author_id = req.kauth.grant.access_token.content.sub;
-      const user = await require('../models/User').findByKeycloakId(author_id);
+      const user = await require('../models/User').findById(req.user.userId);
       
       if (!user) {
         return res.status(401).json({
@@ -211,8 +210,7 @@ class ArticleController {
       }
 
       // Check if user is the author or admin
-      const author_id = req.kauth.grant.access_token.content.sub;
-      const user = await require('../models/User').findByKeycloakId(author_id);
+      const user = await require('../models/User').findById(req.user.userId);
       
       if (!user) {
         return res.status(401).json({
@@ -286,8 +284,7 @@ class ArticleController {
       }
 
       // Check if user is the author or admin
-      const author_id = req.kauth.grant.access_token.content.sub;
-      const user = await require('../models/User').findByKeycloakId(author_id);
+      const user = await require('../models/User').findById(req.user.userId);
       
       if (!user) {
         return res.status(401).json({

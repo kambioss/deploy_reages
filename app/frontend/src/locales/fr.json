@@ -1,0 +1,170 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "about": "À Propos",
+    "mission": "Mission",
+    "vision": "Vision",
+    "values": "Valeurs",
+    "whyJoin": "Pourquoi nous rejoindre",
+    "network": "Réseau",
+    "members": "Membres",
+    "organisations": "Organisations",
+    "partners": "Partenaires",
+    "news": "Actualités",
+    "events": "Événements",
+    "activities": "Activités",
+    "projects": "Projets",
+    "allProjects": "Tous les projets",
+    "ongoingProjects": "Projets en cours",
+    "completedProjects": "Projets terminés",
+    "projectCalls": "Appels à projets",
+    "resources": "Ressources",
+    "publications": "Publications",
+    "reports": "Rapports",
+    "training": "Formation",
+    "career": "Carrière",
+    "tenders": "Appels d'offres",
+    "opportunities": "Opportunités",
+    "contact": "Contact",
+    "login": "Connexion",
+    "register": "S'inscrire",
+    "admin": "Admin",
+    "mySpace": "Mon espace",
+    "logout": "Déconnexion",
+    "search": "Rechercher..."
+  },
+  "hero": {
+    "badge": "Réseau Panafricain",
+    "title": "La géomatique africaine",
+    "titleAccent": "au coeur du futur",
+    "subtitle": "Fédérer les talents, accélérer la recherche et déployer les technologies géospatiales pour un développement souverain et durable de l'Afrique.",
+    "ctaPrimary": "Rejoindre le réseau",
+    "ctaSecondary": "Découvrir nos activités"
+  },
+  "stats": {
+    "members": "Membres actifs",
+    "countries": "Pays couverts",
+    "projects": "Projets réalisés",
+    "publications": "Publications"
+  },
+  "expertise": {
+    "sectionLabel": "Domaines d'expertise",
+    "sectionTitle": "Solutions géospatiales pour les défis africains",
+    "sectionDesc": "Des technologies de pointe appliquées aux réalités du terrain africain pour un développement territorial éclairé.",
+    "items": [
+      {
+        "title": "Cartographie & SIG",
+        "description": "Systèmes d'information géographique avancés pour une cartographie précise et une aide à la décision territoriale."
+      },
+      {
+        "title": "Télédétection Satellitaire",
+        "description": "Suivi et analyse de l'environnement et de l'occupation du sol grâce aux technologies spatiales."
+      },
+      {
+        "title": "Suivi Forestier",
+        "description": "Aide à la décision pour la gestion durable et la protection des écosystèmes forestiers africains."
+      },
+      {
+        "title": "Surveillance Climatique",
+        "description": "Gouvernance territoriale et aide à la décision face aux risques de sécheresse et changements climatiques."
+      },
+      {
+        "title": "Gestion des Inondations",
+        "description": "Aide à la décision et prévention des risques pour la gestion territoriale face aux inondations."
+      },
+      {
+        "title": "Agriculture Intelligente",
+        "description": "Solutions numériques pour une agriculture durable et optimisée grâce aux données satellites."
+      }
+    ]
+  },
+  "about": {
+    "sectionLabel": "Qui sommes-nous",
+    "title": "Un réseau panafricain dédié à la géomatique",
+    "p1": "REAAGESS (Réseau Africain des Acteurs de la Géomatique et des Sciences Spatiales) est une initiative panafricaine dédiée à la promotion des sciences spatiales et de la géomatique en Afrique.",
+    "p2": "Nous fédérons jeunes professionnels, chercheurs et passionnés du domaine géospatial pour favoriser la collaboration, le partage de connaissances et l'innovation à l'échelle continentale.",
+    "p3": "Nos activités incluent la formation des acteurs du secteur, la publication de travaux de recherche, ainsi que le développement de projets innovants en géomatique et sciences spatiales.",
+    "visionLabel": "Notre Vision",
+    "visionText": "Mettre les technologies spatiales et l'intelligence géospatiale au service du développement durable, de la gouvernance territoriale et de l'excellence scientifique en Afrique.",
+    "cta": "En savoir plus"
+  },
+  "vmv": {
+    "vision": {
+      "title": "Notre Vision",
+      "text": "Être un réseau panafricain de référence en sciences spatiales et géomatique, capable de fédérer les talents et de contribuer à un développement durable et souverain de l'Afrique grâce aux technologies géospatiales."
+    },
+    "mission": {
+      "title": "Notre Mission",
+      "text": "Fédérer les jeunes africains des sciences spatiales et de la géomatique, promouvoir l'innovation, stimuler la recherche, former à l'intelligence géospatiale et accompagner les grands projets africains en ingénierie spatiale."
+    },
+    "values": {
+      "title": "Nos Valeurs",
+      "items": [
+        "Collaboration et Solidarité",
+        "Partage des connaissances",
+        "Excellence scientifique",
+        "Innovation et Créativité",
+        "Responsabilité et Intégrité",
+        "Développement durable de l'Afrique"
+      ]
+    }
+  },
+  "whyJoin": {
+    "sectionLabel": "Pourquoi nous rejoindre",
+    "title": "Faites partie du mouvement géospatial africain",
+    "subtitle": "Découvrez les avantages exclusifs du réseau REAAGESS",
+    "cta": "En savoir plus",
+    "items": [
+      {
+        "title": "Accès aux données",
+        "description": "Chaque membre bénéficie d'accès aux données géospatiales mobilisées par le réseau pour ses projets et recherches."
+      },
+      {
+        "title": "Pôles thématiques",
+        "description": "Faites partie d'un pôle dédié à votre spécialité et collaborez avec des experts du domaine."
+      },
+      {
+        "title": "Échange de compétences",
+        "description": "Participez à des formations, webinaires et ateliers pour enrichir vos connaissances."
+      },
+      {
+        "title": "Rencontres annuelles",
+        "description": "Participez à des activités présentielles dans chaque pays membre, à tour de rôle."
+      },
+      {
+        "title": "Discussions approfondies",
+        "description": "Contribuez à des échanges rigoureux sur l'intelligence géospatiale et les technologies innovantes."
+      },
+      {
+        "title": "Collaboration africaine",
+        "description": "Travaillez avec des passionnés et experts à l'échelle continentale pour stimuler l'innovation."
+      }
+    ]
+  },
+  "ctaBanner": {
+    "title": "Prêt à rejoindre le réseau ?",
+    "subtitle": "Rejoignez des centaines de professionnels africains qui font avancer la géomatique sur le continent.",
+    "ctaPrimary": "Rejoindre gratuitement",
+    "ctaSecondary": "Nous contacter"
+  },
+  "footer": {
+    "about": "Réseau Africain des Acteurs de la Géomatique et des Sciences Spatiales, dédié à la promotion des technologies géospatiales au service du développement durable en Afrique.",
+    "quickLinks": "Liens rapides",
+    "expertise": "Domaines d'expertise",
+    "contact": "Contact",
+    "newsletter": "Newsletter",
+    "newsletterDesc": "Abonnez-vous pour recevoir nos actualités",
+    "newsletterPlaceholder": "Votre email",
+    "subscribe": "S'abonner",
+    "rights": "Tous droits réservés.",
+    "legal": "Mentions légales",
+    "privacy": "Politique de confidentialité",
+    "cookies": "Cookies"
+  },
+  "common": {
+    "learnMore": "En savoir plus",
+    "seeAll": "Voir tout",
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue"
+  }
+}

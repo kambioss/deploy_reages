@@ -1,282 +1,126 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  ArrowRight,
-  Users,
-  Target,
-  Lightbulb,
-  Heart,
-  Globe,
-  Award,
-  Rocket,
-} from "lucide-react";
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
+import PageHero from "@/components/PageHero";
+import { Globe, ArrowRight, Users, Target, BookOpen, Rocket, Award, Heart } from "lucide-react";
 import Link from "next/link";
+
+const milestones = [
+  { year: "2021", event: "Fondation de REAAGESS", desc: "Création du réseau par un groupe de passionnés de géomatique africaine." },
+  { year: "2022", event: "Premiers membres fondateurs", desc: "Rejoindre par des professionnels de 5 pays africains pionniers." },
+  { year: "2023", event: "Premières publications", desc: "Lancement de la revue scientifique géospatiale africaine." },
+  { year: "2024", event: "Expansion continentale", desc: "Présence active dans 15 pays africains avec 200+ membres." },
+];
 
 export default function APropos() {
   return (
-    <div className="min-h-screen">
-      {/* Hero Section with Background Image */}
-      <section className="relative h-[600px] flex items-center justify-center overflow-hidden">
-        {/* Background Image with Overlay */}
-        <div className="absolute inset-0 z-0">
-          <img
-            src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072"
-            alt="Sciences spatiales et géomatique"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-900/95 via-indigo-800/90 to-purple-900/95"></div>
-        </div>
+    <div className="min-h-screen bg-white">
+      <Navbar />
+      <PageHero
+        icon={<Globe className="w-10 h-10 text-white" />}
+        label="REAAGESS"
+        title="Qui sommes-nous ?"
+        subtitle="Découvrez le réseau qui façonne l'avenir des sciences spatiales et de la géomatique en Afrique"
+      />
 
-        {/* Hero Content */}
-        <div className="relative z-10 container mx-auto px-4 text-center text-white">
-          <div className="inline-block mb-6">
-            <div className="flex items-center justify-center w-24 h-24 bg-white/20 backdrop-blur-sm rounded-full border-4 border-white/30">
-              <Globe className="w-12 h-12" />
+      {/* Intro */}
+      <section className="py-20 px-6 bg-white">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <div className="section-label">Notre histoire</div>
+              <h2 className="section-h2 text-slate-900 mb-6">Un réseau né d&apos;une passion commune</h2>
+              <div className="space-y-4 text-slate-600 leading-relaxed font-sans">
+                <p>REAAGESS (Réseau Africain des Acteurs de la Géomatique et des Sciences Spatiales) est une initiative panafricaine née de la volonté de fédérer les acteurs africains des sciences géospatiales autour d&apos;une vision commune.</p>
+                <p>Nous rassemblons jeunes professionnels, chercheurs, universitaires et praticiens du domaine géospatial pour créer un écosystème d&apos;excellence au service du développement africain.</p>
+                <p>Notre réseau est fondé sur la conviction que l&apos;Afrique possède les talents et les ressources pour devenir un acteur majeur de la révolution géospatiale mondiale.</p>
+              </div>
+              <div className="flex gap-4 mt-8">
+                <Link href="/mission"><button className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-700 to-cyan-600 text-white font-bold px-6 py-3 rounded-2xl hover:scale-105 transition-all duration-300 shadow-lg font-sans text-sm">Notre Mission <ArrowRight className="h-4 w-4" /></button></Link>
+                <Link href="/vision"><button className="inline-flex items-center gap-2 border-2 border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white font-bold px-6 py-3 rounded-2xl transition-all duration-300 font-sans text-sm">Notre Vision</button></Link>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {[{Icon:Users,v:"200+",l:"Membres actifs",c:"from-blue-600 to-cyan-500"},
+                {Icon:Globe,v:"15",l:"Pays couverts",c:"from-cyan-600 to-teal-500"},
+                {Icon:BookOpen,v:"80+",l:"Publications",c:"from-teal-600 to-emerald-500"},
+                {Icon:Rocket,v:"45+",l:"Projets réalisés",c:"from-purple-600 to-indigo-500"}
+              ].map(({Icon,v,l,c},i)=>(
+                <div key={i} className={`card-hover rounded-2xl p-6 bg-gradient-to-br ${c} text-white shadow-xl`}>
+                  <Icon className="h-8 w-8 mb-3 text-white/80" />
+                  <div className="text-3xl font-bold font-sans mb-1">{v}</div>
+                  <div className="text-white/80 text-sm font-sans">{l}</div>
+                </div>
+              ))}
             </div>
           </div>
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in">
-            Qui sommes-nous ?
-          </h1>
-          <p className="text-xl md:text-2xl max-w-3xl mx-auto text-gray-100">
-            Découvrez le réseau qui façonne l'avenir des sciences spatiales et
-            de la géomatique en Afrique
-          </p>
-        </div>
-
-        {/* Decorative Wave */}
-        <div className="absolute bottom-0 left-0 right-0 z-10">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 1440 120"
-            className="w-full h-auto"
-          >
-            <path
-              fill="#ffffff"
-              fillOpacity="1"
-              d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,64C960,75,1056,85,1152,80C1248,75,1344,53,1392,42.7L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z"
-            ></path>
-          </svg>
         </div>
       </section>
 
-      {/* Main Content */}
-      <section className="py-16 px-4 bg-white">
-        <div className="container mx-auto max-w-6xl">
-          {/* Introduction */}
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl shadow-xl p-8 md:p-12 mb-16">
-            <p className="text-xl text-gray-700 leading-relaxed mb-6">
-              <span className="font-bold text-blue-600 text-2xl">REAAGESS</span>{" "}
-              (Réseau Africain des Acteurs de la Géomatique et des Sciences
-              Spatiales) est une initiative panafricaine dédiée à la promotion
-              des sciences spatiales et de la géomatique en Afrique.
-            </p>
-            <p className="text-lg text-gray-700 leading-relaxed mb-6">
-              Nous fédérons jeunes professionnels, chercheurs et passionnés du
-              domaine géospatial pour favoriser la collaboration, le partage de
-              connaissances et l'innovation.
-            </p>
-            <p className="text-lg text-gray-700 leading-relaxed mb-8">
-              Nos activités incluent la formation des acteurs du secteur, la
-              publication de travaux de recherche, ainsi que le développement de
-              projets innovants en géomatique et sciences spatiales.
-            </p>
-
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-8 rounded-xl shadow-lg">
-              <div className="flex items-start gap-4">
-                <Rocket className="w-8 h-8 flex-shrink-0 mt-1" />
-                <div>
-                  <h3 className="text-2xl font-bold mb-3">Notre Vision</h3>
-                  <p className="text-lg leading-relaxed text-blue-50">
-                    Mettre les technologies spatiales et l'intelligence
-                    géospatiale au service du développement durable, de la
-                    gouvernance territoriale et de l'excellence scientifique en
-                    Afrique.
-                  </p>
+      {/* Timeline */}
+      <section className="py-20 px-6 bg-slate-50">
+        <div className="container mx-auto max-w-5xl">
+          <div className="text-center mb-14">
+            <div className="section-label mx-auto w-fit">Notre parcours</div>
+            <h2 className="section-h2 text-slate-900">Les grandes étapes de REAAGESS</h2>
+          </div>
+          <div className="relative">
+            <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-600 to-emerald-500 -translate-x-1/2" />
+            {milestones.map((m, i) => (
+              <div key={i} className={`relative flex items-center gap-8 mb-10 ${i % 2 === 0 ? "flex-row" : "flex-row-reverse"}`}>
+                <div className={`w-1/2 ${i % 2 === 0 ? "text-right pr-8" : "text-left pl-8"}`}>
+                  <div className="card-hover inline-block bg-white rounded-2xl p-6 shadow-sm border border-slate-100 max-w-xs">
+                    <div className="text-cyan-600 font-bold font-sans text-sm mb-1">{m.year}</div>
+                    <h3 className="card-h3 text-slate-900 mb-2">{m.event}</h3>
+                    <p className="text-slate-500 text-sm font-sans">{m.desc}</p>
+                  </div>
                 </div>
+                <div className="absolute left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-cyan-500 border-4 border-white shadow-md" />
+                <div className="w-1/2" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Team/values */}
+      <section className="py-20 px-6 bg-white">
+        <div className="container mx-auto max-w-6xl">
+          <div className="rounded-2xl bg-gradient-to-br from-[#0a1628] to-[#0d2444] p-12 text-white relative overflow-hidden shadow-2xl">
+            <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "radial-gradient(circle,#fff 1px,transparent 1px)", backgroundSize: "24px 24px" }} />
+            <div className="absolute right-0 top-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl" />
+            <div className="relative z-10 grid lg:grid-cols-2 gap-10 items-center">
+              <div>
+                <Award className="h-12 w-12 text-cyan-400 mb-4" />
+                <h2 className="section-h2 text-white mb-5">Rejoignez une communauté d&apos;excellence</h2>
+                <p className="text-slate-300 leading-relaxed font-sans">REAAGESS vous offre bien plus qu&apos;un simple réseau professionnel. C&apos;est une communauté d&apos;acteurs engagés dans la transformation géospatiale de l&apos;Afrique.</p>
+              </div>
+              <div className="space-y-4">
+                {[{Icon:Heart,t:"Communauté bienveillante",d:"Un espace d'entraide et de partage"},
+                  {Icon:Target,t:"Ambitions partagées",d:"Des objectifs communs à l'échelle continentale"},
+                  {Icon:Globe,t:"Impact réel",d:"Des projets qui changent concrètement les territoires"}
+                ].map(({Icon,t,d},i)=>(
+                  <div key={i} className="flex items-start gap-4 bg-white/5 rounded-xl p-4">
+                    <div className="w-10 h-10 bg-cyan-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Icon className="h-5 w-5 text-cyan-400" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-white text-sm font-sans">{t}</div>
+                      <div className="text-slate-400 text-xs font-sans mt-0.5">{d}</div>
+                    </div>
+                  </div>
+                ))}
+                <Link href="/register">
+                  <button className="w-full mt-2 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold py-3.5 rounded-2xl hover:scale-105 transition-all duration-300 font-sans text-sm flex items-center justify-center gap-2">
+                    Rejoindre REAAGESS <ArrowRight className="h-4 w-4" />
+                  </button>
+                </Link>
               </div>
             </div>
           </div>
-
-          {/* Key Values Grid */}
-          <div className="mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12">
-              Nos Valeurs Fondamentales
-            </h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-blue-50 to-white">
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <Users className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
-                    Collaboration
-                  </h3>
-                  <p className="text-gray-600">
-                    Fédérer les acteurs du secteur géospatial africain
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-indigo-50 to-white">
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <Lightbulb className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
-                    Innovation
-                  </h3>
-                  <p className="text-gray-600">
-                    Développer des solutions géospatiales innovantes
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-purple-50 to-white">
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <Award className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
-                    Excellence
-                  </h3>
-                  <p className="text-gray-600">
-                    Promouvoir l'excellence scientifique en Afrique
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-pink-50 to-white">
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <Heart className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
-                    Engagement
-                  </h3>
-                  <p className="text-gray-600">
-                    Servir le développement durable du continent
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-
-          {/* Mission & Vision Cards */}
-          <div className="grid md:grid-cols-2 gap-8 mb-16">
-            <Card className="border-0 shadow-xl overflow-hidden">
-              <div className="h-3 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
-              <CardContent className="p-8">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <Target className="w-6 h-6 text-blue-600" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900">
-                    Notre Mission
-                  </h3>
-                </div>
-                <ul className="space-y-3 text-gray-700">
-                  <li className="flex items-start gap-2">
-                    <span className="text-blue-600 font-bold mt-1">•</span>
-                    <span>
-                      Former et renforcer les capacités des acteurs du secteur
-                      géospatial
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-blue-600 font-bold mt-1">•</span>
-                    <span>
-                      Publier et diffuser les travaux de recherche en géomatique
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-blue-600 font-bold mt-1">•</span>
-                    <span>
-                      Développer des projets innovants pour le développement de
-                      l'Afrique
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-blue-600 font-bold mt-1">•</span>
-                    <span>
-                      Créer des synergies entre professionnels et chercheurs
-                    </span>
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-xl overflow-hidden">
-              <div className="h-3 bg-gradient-to-r from-indigo-500 to-purple-600"></div>
-              <CardContent className="p-8">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
-                    <Globe className="w-6 h-6 text-indigo-600" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900">
-                    Nos Objectifs
-                  </h3>
-                </div>
-                <ul className="space-y-3 text-gray-700">
-                  <li className="flex items-start gap-2">
-                    <span className="text-indigo-600 font-bold mt-1">•</span>
-                    <span>Contribuer à la souveraineté spatiale africaine</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-indigo-600 font-bold mt-1">•</span>
-                    <span>
-                      Faciliter l'accès aux données et technologies géospatiales
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-indigo-600 font-bold mt-1">•</span>
-                    <span>
-                      Promouvoir l'utilisation des sciences spatiales pour le
-                      développement
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-indigo-600 font-bold mt-1">•</span>
-                    <span>
-                      Renforcer la coopération panafricaine dans le secteur
-                    </span>
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* CTA Section */}
-          <div className="text-center bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-12 shadow-2xl">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Prêt à rejoindre l'aventure ?
-            </h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-              Faites partie du réseau qui transforme le paysage géospatial
-              africain
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                asChild
-                size="lg"
-                className="bg-white text-blue-600 hover:bg-gray-100 font-semibold px-8"
-              >
-                <Link href="/pourquoi-nous-rejoindre">
-                  Pourquoi nous rejoindre
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="border-2 border-white text-white hover:bg-white/10 font-semibold px-8"
-              >
-                <Link href="/contact">Nous contacter</Link>
-              </Button>
-            </div>
-          </div>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 }

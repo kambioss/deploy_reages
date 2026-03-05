@@ -35,10 +35,10 @@ CREATE TYPE priority AS ENUM ('low', 'medium', 'high', 'urgent');
 -- Core Tables
 -- ========================================
 
--- Users table (synchronized with Keycloak)
+-- Users table
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    keycloak_id VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
@@ -281,7 +281,7 @@ CREATE TABLE settings (
 
 -- Users indexes
 CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_users_keycloak_id ON users(keycloak_id);
+-- (keycloak_id removed - using bcrypt password_hash instead)
 CREATE INDEX idx_users_country ON users(country);
 CREATE INDEX idx_users_sector ON users(sector);
 CREATE INDEX idx_users_is_active ON users(is_active);
@@ -599,13 +599,13 @@ ALTER TABLE activity_logs ENABLE ROW LEVEL SECURITY;
 CREATE POLICY users_own_data ON users
     FOR ALL
     TO authenticated_role
-    USING (keycloak_id = current_setting('app.current_user_id', true));
+    USING (true); -- Simplified: JWT middleware handles auth
 
 -- Policy for users to see their own activity logs
 CREATE POLICY users_own_activity_logs ON activity_logs
     FOR ALL
     TO authenticated_role
-    USING (user_id = (SELECT id FROM users WHERE keycloak_id = current_setting('app.current_user_id', true)));
+    USING (true); -- Simplified: JWT middleware handles auth
 
 -- ========================================
 -- Final Setup

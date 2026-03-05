@@ -1,4 +1,5 @@
 const { Pool } = require('pg');
+const config = require('./index');
 const logger = require('../utils/logger');
 
 class Database {
@@ -10,18 +11,22 @@ class Database {
   async init() {
     try {
       this.pool = new Pool({
-        connectionString: process.env.DATABASE_URL,
-        ssl: false, // mettre { rejectUnauthorized: false } si production cloud
-        max: 10,
-        idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 2000,
+        host: config.database.host,
+        port: config.database.port,
+        database: config.database.name,
+        user: config.database.user,
+        password: config.database.password,
+        ssl: config.database.ssl,
+        max: config.database.max,
+        idleTimeoutMillis: config.database.idleTimeoutMillis,
+        connectionTimeoutMillis: config.database.connectionTimeoutMillis,
       });
 
-      // Test connection
+      // Test the connection
       const client = await this.pool.connect();
       await client.query('SELECT NOW()');
       client.release();
-
+      
       logger.info('Database connection established successfully');
     } catch (error) {
       logger.error('Failed to connect to database:', error);
@@ -34,7 +39,7 @@ class Database {
     try {
       const result = await this.pool.query(text, params);
       const duration = Date.now() - start;
-      logger.debug('Executed query', { duration, rows: result.rowCount });
+      logger.debug('Executed query', { text, duration, rows: result.rowCount });
       return result;
     } catch (error) {
       logger.error('Database query error:', { text, error: error.message });
@@ -43,7 +48,7 @@ class Database {
   }
 
   async getClient() {
-    return this.pool.connect();
+    return await this.pool.connect();
   }
 
   async close() {
@@ -51,6 +56,7 @@ class Database {
     logger.info('Database connection closed');
   }
 
+  // Transaction helper
   async transaction(callback) {
     const client = await this.getClient();
     try {

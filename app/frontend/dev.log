@@ -1,79 +1,19 @@
    ▲ Next.js 15.3.5
    - Local:        http://localhost:3000
    - Network:      http://192.168.1.101:3000
-   - Environments: .env.local
+   - Environments: .env.local, .env
 
  ✓ Starting...
- ✓ Ready in 2.8s
+ ✓ Ready in 3.9s
  ○ Compiling / ...
- ✓ Compiled / in 8.3s (913 modules)
- GET / 200 in 8958ms
+ ✓ Compiled / in 3.9s (886 modules)
+ GET / 200 in 4661ms
  ○ Compiling /api/auth/me ...
- ✓ Compiled /api/auth/me in 2.8s (996 modules)
- ⨯ Error: @prisma/client did not initialize yet. Please run "prisma generate" and try to import it again.
-    at eval (src/lib/db.ts:9:2)
-    at <unknown> (rsc)/./src/lib/db.ts (/home/kambia/Downloads/reaages-complet/frontend/.next/server/app/api/auth/me/route.js:65:1)
-    at __webpack_require__ (.next/server/webpack-runtime.js:33:42)
-    at eval (webpack-internal:///(rsc)/./src/app/api/auth/me/route.ts:7:65)
-    at <unknown> (rsc)/./src/app/api/auth/me/route.ts (/home/kambia/Downloads/reaages-complet/frontend/.next/server/app/api/auth/me/route.js:43:1)
-    at __webpack_require__ (.next/server/webpack-runtime.js:33:42)
-    at __webpack_require__ (.next/server/webpack-runtime.js:33:42)
-    at __webpack_exec__ (.next/server/app/api/auth/me/route.js:195:39)
-    at <unknown> (.next/server/app/api/auth/me/route.js:196:528)
-    at __webpack_require__.X (.next/server/webpack-runtime.js:168:21)
-    at <unknown> (.next/server/app/api/auth/me/route.js:196:47)
-    at Object.<anonymous> (.next/server/app/api/auth/me/route.js:199:3)
-   7 | export const db =
-   8 |   globalForPrisma.prisma ??
->  9 |   new PrismaClient({
-     |  ^
-  10 |     log: ['query'],
-  11 |   })
-  12 | {
-  page: '/api/auth/me'
-}
- GET / 200 in 478ms
- ○ Compiling /_error ...
- ✓ Compiled /_error in 2.7s (1316 modules)
- GET / 200 in 1041ms
- GET / 200 in 27ms
- GET /api/auth/me 500 in 6666ms
+ ✓ Compiled /api/auth/me in 958ms (906 modules)
+ GET /api/auth/me 404 in 1423ms
  ○ Compiling /mission ...
- ✓ Compiled /mission in 918ms (1338 modules)
- GET /mission 200 in 1139ms
- ○ Compiling /carriere/appels-offres ...
- ✓ Compiled /carriere/appels-offres in 1265ms (1353 modules)
- GET /carriere/appels-offres 200 in 1462ms
- GET / 200 in 86ms
- ○ Compiling /register ...
- ✓ Compiled /register in 2.4s (1500 modules)
- GET /register 200 in 2641ms
- GET /register 200 in 609ms
- GET /register 200 in 236ms
- ⨯ Error: @prisma/client did not initialize yet. Please run "prisma generate" and try to import it again.
-    at eval (src/lib/db.ts:9:2)
-    at <unknown> (rsc)/./src/lib/db.ts (/home/kambia/Downloads/reaages-complet/frontend/.next/server/app/api/auth/me/route.js:65:1)
-    at __webpack_require__ (.next/server/webpack-runtime.js:33:42)
-    at eval (webpack-internal:///(rsc)/./src/app/api/auth/me/route.ts:7:65)
-    at <unknown> (rsc)/./src/app/api/auth/me/route.ts (/home/kambia/Downloads/reaages-complet/frontend/.next/server/app/api/auth/me/route.js:43:1)
-    at __webpack_require__ (.next/server/webpack-runtime.js:33:42)
-    at __webpack_require__ (.next/server/webpack-runtime.js:33:42)
-    at __webpack_exec__ (.next/server/app/api/auth/me/route.js:195:39)
-    at <unknown> (.next/server/app/api/auth/me/route.js:196:528)
-    at __webpack_require__.X (.next/server/webpack-runtime.js:168:21)
-    at <unknown> (.next/server/app/api/auth/me/route.js:196:47)
-    at Object.<anonymous> (.next/server/app/api/auth/me/route.js:199:3)
-   7 | export const db =
-   8 |   globalForPrisma.prisma ??
->  9 |   new PrismaClient({
-     |  ^
-  10 |     log: ['query'],
-  11 |   })
-  12 | {
-  page: '/api/auth/me'
-}
- GET /api/auth/me 500 in 492ms
+ ✓ Compiled /mission in 1793ms (910 modules)
+ GET /mission 200 in 2215ms
  ○ Compiling /login ...
- ✓ Compiled /login in 2.3s (1509 modules)
- GET /login 200 in 2426ms
- GET /login 200 in 27ms
+ ✓ Compiled /login in 1419ms (939 modules)
+ GET /login 200 in 1606ms

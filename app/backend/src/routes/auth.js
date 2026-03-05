@@ -1,17 +1,13 @@
 const express = require('express');
 const AuthController = require('../controllers/AuthController');
+const { authenticate } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Public routes
-router.get('/config', AuthController.getKeycloakConfig);
-router.get('/check', AuthController.checkAuth);
-
-// Protected routes (require Keycloak middleware)
-router.post('/callback', AuthController.handleKeycloakCallback);
-router.get('/profile', AuthController.getProfile);
-router.put('/profile', AuthController.updateProfile);
-router.post('/complete-registration', AuthController.completeRegistration);
-router.post('/logout', AuthController.logout);
+router.post('/register', AuthController.register);
+router.post('/login',    AuthController.login);
+router.post('/logout',   AuthController.logout);
+router.get('/me',        authenticate, AuthController.getMe);
+router.put('/profile',   authenticate, AuthController.updateProfile);
 
 module.exports = router;

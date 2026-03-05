@@ -1,277 +1,105 @@
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Target,
-  Eye,
-  Telescope,
-  Sparkles,
-  Globe2,
-  TrendingUp,
-  Shield,
-} from "lucide-react";
+import PageHero from "@/components/PageHero";
+import { Eye, Globe2, Sparkles, TrendingUp, Shield, Star, ArrowRight } from "lucide-react";
+import Link from "next/link";
+
+const pillars = [
+  { icon: Globe2,    title: "Réseau Panafricain",       description: "Devenir la référence continentale en matière de sciences spatiales et géomatique, reconnue par les institutions mondiales.", color: "from-purple-600 to-indigo-500" },
+  { icon: Sparkles,  title: "Excellence & Innovation",   description: "Fédérer les meilleurs talents africains pour innover, exceller et créer des solutions à la hauteur des enjeux continentaux.", color: "from-indigo-600 to-blue-500" },
+  { icon: TrendingUp,title: "Développement Durable",     description: "Contribuer au développement durable de l'Afrique par les technologies géospatiales appliquées aux défis réels du terrain.", color: "from-blue-600 to-cyan-500" },
+  { icon: Shield,    title: "Souveraineté Africaine",    description: "Renforcer l'autonomie technologique et la souveraineté spatiale du continent par la maîtrise locale des données géospatiales.", color: "from-cyan-600 to-teal-500" },
+  { icon: Star,      title: "Rayonnement International", description: "Projeter l'excellence géospatiale africaine sur la scène internationale et créer des ponts avec les grandes agences spatiales mondiales.", color: "from-teal-600 to-emerald-500" },
+];
 
 export default function Vision() {
-  const visionPillars = [
-    {
-      icon: Globe2,
-      title: "Réseau Panafricain",
-      description:
-        "Devenir la référence continentale en matière de sciences spatiales et géomatique",
-      color: "from-purple-500 to-indigo-600",
-    },
-    {
-      icon: Sparkles,
-      title: "Excellence & Innovation",
-      description:
-        "Fédérer les meilleurs talents africains pour innover et exceller",
-      color: "from-indigo-500 to-blue-600",
-    },
-    {
-      icon: TrendingUp,
-      title: "Développement Durable",
-      description:
-        "Contribuer au développement durable de l'Afrique par les technologies géospatiales",
-      color: "from-blue-500 to-cyan-600",
-    },
-    {
-      icon: Shield,
-      title: "Souveraineté Africaine",
-      description:
-        "Renforcer l'autonomie technologique et la souveraineté spatiale du continent",
-      color: "from-cyan-500 to-teal-600",
-    },
-  ];
-
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white">
       <Navbar />
-      {/* Hero Section with Background Image */}
-      <section className="relative h-[600px] flex items-center justify-center overflow-hidden">
-        {/* Background Image with Overlay */}
-        <div className="absolute inset-0 z-0">
-          <img
-            src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=2011"
-            alt="Vision de l'espace"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/95 via-indigo-900/90 to-blue-900/95"></div>
-        </div>
+      <PageHero
+        icon={<Eye className="w-10 h-10 text-white" />}
+        label="REAAGESS"
+        title="Notre Vision"
+        subtitle="L'horizon que nous nous fixons pour l'avenir géospatial du continent africain"
+        gradient="from-[#0a1628] via-[#1a1060] to-[#0c2340]"
+      />
 
-        {/* Animated Stars Background */}
-        <div className="absolute inset-0 z-0">
-          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white rounded-full animate-pulse"></div>
-          <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-white rounded-full animate-pulse delay-300"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-1.5 h-1.5 bg-white rounded-full animate-pulse delay-700"></div>
-          <div className="absolute top-2/3 right-1/4 w-2 h-2 bg-white rounded-full animate-pulse delay-500"></div>
-          <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-        </div>
-
-        {/* Hero Content */}
-        <div className="relative z-10 container mx-auto px-4 text-center text-white">
-          <div className="inline-block mb-8">
-            <div className="relative">
-              {/* Glow Effect */}
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-400 to-indigo-600 rounded-full blur-2xl opacity-60 animate-pulse"></div>
-              {/* Main Icon */}
-              <div className="relative w-28 h-28 bg-gradient-to-br from-purple-400 to-indigo-600 rounded-full flex items-center justify-center border-4 border-white/40 shadow-2xl">
-                <Telescope className="w-14 h-14" />
-              </div>
-              {/* Orbiting Eye Icon */}
-              <div className="absolute -top-2 -right-2 w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full flex items-center justify-center border-2 border-white/60 shadow-xl animate-bounce">
-                <Eye className="w-6 h-6" />
-              </div>
+      {/* Vision statement */}
+      <section className="py-20 px-6 bg-white">
+        <div className="container mx-auto max-w-5xl">
+          <div className="rounded-2xl border border-slate-100 shadow-xl overflow-hidden">
+            <div className="h-1.5 bg-gradient-to-r from-purple-600 via-indigo-500 to-cyan-500" />
+            <div className="p-10 md:p-16 text-center bg-white">
+              <p className="text-xl md:text-2xl text-slate-700 leading-relaxed font-display font-medium max-w-4xl mx-auto">
+                Être un <span className="text-purple-600">réseau panafricain de référence</span> en sciences spatiales et géomatique, capable de{" "}
+                <span className="text-indigo-600">fédérer les talents</span> et de contribuer à un{" "}
+                <span className="text-cyan-600">développement durable et souverain</span> de l&apos;Afrique grâce aux technologies géospatiales.
+              </p>
             </div>
           </div>
-
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in">
-            Notre Vision
-          </h1>
-          <p className="text-xl md:text-2xl max-w-3xl mx-auto text-purple-100 leading-relaxed">
-            L'ambition qui guide notre action quotidienne vers un avenir spatial
-            africain
-          </p>
-        </div>
-
-        {/* Decorative Wave */}
-        <div className="absolute bottom-0 left-0 right-0 z-10">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 1440 120"
-            className="w-full h-auto"
-          >
-            <path
-              fill="#ffffff"
-              fillOpacity="1"
-              d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,64C960,75,1056,85,1152,80C1248,75,1344,53,1392,42.7L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z"
-            ></path>
-          </svg>
         </div>
       </section>
 
-      {/* Main Content */}
-      <section className="py-16 px-4 bg-white">
+      {/* Vision pillars */}
+      <section className="py-20 px-6 bg-slate-50">
         <div className="container mx-auto max-w-6xl">
-          {/* Vision Statement Card */}
-          <div className="mb-16">
-            <Card className="border-0 shadow-2xl overflow-hidden">
-              <div className="h-3 bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500"></div>
-              <CardContent className="p-10 md:p-16 text-center bg-gradient-to-br from-purple-50/50 to-indigo-50/50">
-                <div className="max-w-4xl mx-auto">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full mb-6 shadow-lg">
-                    <Target className="w-8 h-8 text-white" />
-                  </div>
-                  <p className="text-2xl md:text-3xl text-gray-800 leading-relaxed font-medium mb-6">
-                    Être un{" "}
-                    <span className="text-purple-600 font-bold">
-                      réseau panafricain de référence
-                    </span>{" "}
-                    en sciences spatiales et géomatique, capable de{" "}
-                    <span className="text-indigo-600 font-bold">
-                      fédérer les talents
-                    </span>{" "}
-                    et de contribuer à un
-                    <span className="text-blue-600 font-bold">
-                      {" "}
-                      développement durable et souverain
-                    </span>{" "}
-                    de l'Afrique grâce aux{" "}
-                    <span className="text-cyan-600 font-bold">
-                      technologies géospatiales
-                    </span>
-                    .
-                  </p>
-                  <div className="flex items-center justify-center gap-2 text-purple-600">
-                    <Sparkles className="w-5 h-5" />
-                    <span className="text-sm font-semibold">Vision 2030</span>
-                    <Sparkles className="w-5 h-5" />
-                  </div>
+          <div className="text-center mb-14">
+            <div className="section-label mx-auto w-fit">Les piliers de notre vision</div>
+            <h2 className="section-h2 text-slate-900">Ce vers quoi nous tendons</h2>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {pillars.map((p, i) => (
+              <div key={i} className="card-hover group bg-white rounded-2xl p-8 border border-slate-100 shadow-sm">
+                <div className={`w-14 h-14 bg-gradient-to-br ${p.color} rounded-xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                  <p.icon className="w-7 h-7 text-white" />
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Vision Pillars Title */}
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Les Piliers de Notre Vision
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Quatre axes stratégiques pour transformer notre vision en réalité
-            </p>
-          </div>
-
-          {/* Vision Pillars Grid */}
-          <div className="grid md:grid-cols-2 gap-8 mb-16">
-            {visionPillars.map((pillar, index) => (
-              <Card
-                key={index}
-                className="border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 bg-white overflow-hidden group"
-              >
-                <div className={`h-2 bg-gradient-to-r ${pillar.color}`}></div>
-                <CardContent className="p-8">
-                  <div className="flex items-start gap-6">
-                    <div
-                      className={`flex-shrink-0 w-16 h-16 bg-gradient-to-br ${pillar.color} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-300`}
-                    >
-                      <pillar.icon className="w-8 h-8 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-3">
-                        {pillar.title}
-                      </h3>
-                      <p className="text-gray-600 leading-relaxed">
-                        {pillar.description}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                <h3 className="card-h3 text-slate-900 mb-3">{p.title}</h3>
+                <p className="text-slate-500 leading-relaxed text-sm font-sans">{p.description}</p>
+              </div>
             ))}
           </div>
-
-          {/* Timeline Section */}
-          <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl p-8 md:p-12 mb-16">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-3">
-                Notre Horizon 2030
-              </h2>
-              <p className="text-lg text-gray-600">
-                Les étapes clés pour réaliser notre vision
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="bg-white rounded-xl p-6 shadow-lg">
-                <div className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600 mb-2">
-                  2025
-                </div>
-                <h4 className="font-bold text-gray-900 mb-2">Consolidation</h4>
-                <p className="text-gray-600 text-sm">
-                  Renforcement du réseau et établissement de partenariats
-                  stratégiques
-                </p>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 shadow-lg">
-                <div className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-blue-600 mb-2">
-                  2027
-                </div>
-                <h4 className="font-bold text-gray-900 mb-2">Expansion</h4>
-                <p className="text-gray-600 text-sm">
-                  Extension à l'ensemble du continent et lancement de programmes
-                  majeurs
-                </p>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 shadow-lg">
-                <div className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600 mb-2">
-                  2030
-                </div>
-                <h4 className="font-bold text-gray-900 mb-2">Leadership</h4>
-                <p className="text-gray-600 text-sm">
-                  Référence mondiale en sciences spatiales et géomatique
-                  africaines
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Impact Card */}
-          <Card className="border-0 shadow-2xl overflow-hidden">
-            <div className="bg-gradient-to-br from-purple-600 via-indigo-600 to-blue-600 p-10 md:p-12 text-white text-center">
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <Sparkles className="w-8 h-8 animate-pulse" />
-                <h2 className="text-3xl md:text-4xl font-bold">
-                  L'Impact que Nous Visons
-                </h2>
-                <Sparkles className="w-8 h-8 animate-pulse" />
-              </div>
-              <p className="text-xl text-purple-100 max-w-3xl mx-auto leading-relaxed mb-8">
-                En réalisant cette vision, nous aspirons à faire de l'Afrique un
-                continent pionnier dans l'utilisation des technologies spatiales
-                pour résoudre ses propres défis, créer des opportunités
-                économiques et affirmer sa place dans l'économie spatiale
-                mondiale.
-              </p>
-              <div className="flex flex-wrap justify-center gap-6 text-white/90">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-white rounded-full"></div>
-                  <span>Autonomie technologique</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-white rounded-full"></div>
-                  <span>Création d'emplois</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-white rounded-full"></div>
-                  <span>Innovation durable</span>
-                </div>
-              </div>
-            </div>
-          </Card>
         </div>
       </section>
+
+      {/* Horizon 2030 */}
+      <section className="py-20 px-6 bg-white">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="section-label">Objectif stratégique</div>
+              <h2 className="section-h2 text-slate-900 mb-6">Horizon 2030</h2>
+              <p className="text-slate-600 leading-relaxed mb-6 font-sans">D'ici 2030, REAAGESS aspire à devenir l'institution de référence en géomatique et sciences spatiales en Afrique, avec une présence active dans plus de 30 pays, des laboratoires de recherche affiliés dans 10 universités africaines, et des partenariats stratégiques avec les agences spatiales mondiales.</p>
+              <ul className="space-y-3">
+                {["30+ pays membres actifs","10 laboratoires universitaires affiliés","5 agences spatiales partenaires","1 000+ membres certifiés"].map((item,i)=>(
+                  <li key={i} className="flex items-center gap-3 text-slate-700 font-sans text-sm">
+                    <div className="w-2 h-2 rounded-full bg-cyan-500 flex-shrink-0" />{item}
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-8">
+                <Link href="/a-propos">
+                  <button className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold px-8 py-3.5 rounded-2xl hover:scale-105 transition-all duration-300 shadow-lg shadow-purple-500/25 font-sans">
+                    En savoir plus <ArrowRight className="h-4 w-4" />
+                  </button>
+                </Link>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {[{n:"2024",t:"Fondation REAAGESS",c:"from-blue-600 to-cyan-500"},
+                {n:"2026",t:"10 pays membres",c:"from-cyan-600 to-teal-500"},
+                {n:"2028",t:"50 projets réalisés",c:"from-teal-600 to-emerald-500"},
+                {n:"2030",t:"Référence continentale",c:"from-purple-600 to-indigo-500"}
+              ].map((s,i)=>(
+                <div key={i} className={`card-hover rounded-2xl p-6 bg-gradient-to-br ${s.c} text-white shadow-xl`}>
+                  <div className="text-3xl font-bold font-sans mb-2">{s.n}</div>
+                  <div className="text-white/90 text-sm font-sans">{s.t}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </div>
   );
