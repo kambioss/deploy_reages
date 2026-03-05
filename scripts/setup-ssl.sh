@@ -1,15 +1,13 @@
 #!/usr/bin/env bash
 # ================================================================
-#  setup-ssl.sh
-#  Génère les certificats SSL pour reaages.gis-master.com
-#
-#  Option A : Let's Encrypt (recommandé en prod)
-#  Option B : Certificat auto-signé (dev / test)
+#  setup-ssl.sh — Certificats SSL pour reaages.gis-master.com
+#  Plugin OVH DNS-01 → 100% automatique, aucun port touché
 # ================================================================
 set -euo pipefail
 
 DOMAIN="reaages.gis-master.com"
 SSL_DIR="$(cd "$(dirname "$0")/.." && pwd)/ssl"
+OVH_CREDS="$(cd "$(dirname "$0")/.." && pwd)/secrets/ovh.ini"
 mkdir -p "$SSL_DIR"
 chmod 700 "$SSL_DIR"
 
@@ -20,22 +18,20 @@ err()  { echo -e "\033[31m[✘]\033[0m $*"; exit 1; }
 
 echo ""
 echo "═══════════════════════════════════════════════"
-echo "  REAAGES — Configuration SSL"
+echo "  REAAGES — Configuration SSL via OVH DNS"
 echo "  Domaine : $DOMAIN"
 echo "═══════════════════════════════════════════════"
 echo ""
 
 MODE=${1:-"letsencrypt"}
 
-# ── Option A : Let's Encrypt via Certbot ─────────────────────
+# ── Option A : Let's Encrypt + plugin OVH ────────────────────
 if [[ "$MODE" == "letsencrypt" ]]; then
-  info "Mode : Let's Encrypt (Certbot)"
-  echo ""
-  warn "⚠ Ports 80 et 443 doivent être ouverts et accessibles"
-  warn "  (Certbot utilise le challenge HTTP-01)"
+  info "Mode : Let's Encrypt — plugin OVH (DNS-01 automatique)"
+  info "Aucun port à libérer, aucun service arrêté."
   echo ""
 
-  # ── Vérification droits root ────────────────────────────────
+  # Escalade root
   if [[ $EUID -ne 0 ]]; then
     warn "Certbot nécessite les droits root."
     info "Relance automatique avec sudo…"
@@ -43,56 +39,90 @@ if [[ "$MODE" == "letsencrypt" ]]; then
     exec sudo bash "$0" "$@"
   fi
 
-  command -v certbot >/dev/null 2>&1 || err "certbot non installé. Lancez : sudo apt install certbot"
+  # ── Installation des outils ──────────────────────────────────
+  info "Vérification des dépendances…"
+  apt-get update -qq
+  apt-get install -y -qq certbot python3-certbot-dns-ovh
+  log "certbot + plugin OVH installés"
 
-  # ── Arrêt temporaire de nginx si actif ─────────────────────
-  info "Arrêt temporaire de Nginx (libération port 80)…"
-  docker compose -f "$(dirname "$0")/../docker-compose.yml" stop nginx 2>/dev/null || true
-  sleep 2
+  # ── Vérification fichier credentials OVH ────────────────────
+  if [[ ! -f "$OVH_CREDS" ]]; then
+    echo ""
+    warn "Fichier de credentials OVH manquant : secrets/ovh.ini"
+    echo ""
+    info "Créez vos credentials OVH API ici :"
+    echo "  https://www.ovh.com/auth/api/createToken"
+    echo ""
+    echo "  Application name    : reaages-certbot"
+    echo "  Application descr.  : Certbot SSL renouvellement"
+    echo "  Validity            : Unlimited"
+    echo "  Rights GET/PUT/POST/DELETE sur : /domain/zone/*"
+    echo ""
+    info "Puis créez le fichier secrets/ovh.ini avec :"
+    echo ""
+    cat << 'TEMPLATE'
+  dns_ovh_endpoint           = ovh-eu
+  dns_ovh_application_key    = VOTRE_APP_KEY
+  dns_ovh_application_secret = VOTRE_APP_SECRET
+  dns_ovh_consumer_key       = VOTRE_CONSUMER_KEY
+TEMPLATE
+    echo ""
+    echo "  chmod 600 secrets/ovh.ini"
+    echo ""
+    err "Créez secrets/ovh.ini puis relancez le script."
+  fi
 
-  # ── Obtention du certificat ─────────────────────────────────
+  chmod 600 "$OVH_CREDS"
+  log "Credentials OVH trouvés"
+
+  # ── Obtention du certificat ──────────────────────────────────
+  info "Demande du certificat (propagation DNS automatique ~30s)…"
   certbot certonly \
-    --standalone \
+    --dns-ovh \
+    --dns-ovh-credentials "$OVH_CREDS" \
+    --dns-ovh-propagation-seconds 60 \
     --non-interactive \
     --agree-tos \
     --email admin@gis-master.com \
-    -d "$DOMAIN"
+    -d "$DOMAIN" \
+    -d "www.$DOMAIN"
 
-  # ── Copie des certs dans ./ssl/ ─────────────────────────────
+  # ── Copie des certs ──────────────────────────────────────────
   CERT_PATH="/etc/letsencrypt/live/$DOMAIN"
   cp "$CERT_PATH/fullchain.pem" "$SSL_DIR/tls.crt"
   cp "$CERT_PATH/privkey.pem"   "$SSL_DIR/tls.key"
-
-  # Permissions lisibles par l'utilisateur courant (pour Docker)
   REAL_USER="${SUDO_USER:-$USER}"
   chown "$REAL_USER":"$REAL_USER" "$SSL_DIR/tls.crt" "$SSL_DIR/tls.key" 2>/dev/null || true
+  log "Certificats copiés dans $SSL_DIR"
 
-  log "Certificats Let's Encrypt copiés dans $SSL_DIR"
-
-  # ── DH params ───────────────────────────────────────────────
+  # ── DH params ────────────────────────────────────────────────
   if [[ ! -f "$SSL_DIR/dhparam.pem" ]]; then
     info "Génération de dhparam.pem (2048 bits)…"
     openssl dhparam -out "$SSL_DIR/dhparam.pem" 2048
     log "dhparam.pem généré"
   fi
 
-  # ── Redémarrage Nginx ───────────────────────────────────────
-  info "Redémarrage de Nginx…"
-  docker compose -f "$(dirname "$0")/../docker-compose.yml" start nginx 2>/dev/null || \
-    warn "Nginx non démarré — lancez './scripts/deploy.sh up' si c'est le premier déploiement"
+  # ── Reload Nginx Docker si actif ─────────────────────────────
+  docker compose -f "$(dirname "$0")/../docker-compose.yml" exec nginx \
+    nginx -s reload 2>/dev/null && log "Nginx rechargé" || \
+    info "Nginx pas encore démarré — lancez './scripts/deploy.sh up'"
 
-  # ── Renouvellement automatique (cron) ───────────────────────
+  # ── Cron renouvellement 100% automatique ─────────────────────
   DEPLOY_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-  RENEW_SCRIPT="/etc/cron.d/reaages-certbot-renew"
-  cat > "$RENEW_SCRIPT" << CRON
-# Renouvellement auto Let's Encrypt — REAAGES
-# Tous les lundis à 3h du matin
-0 3 * * 1 root certbot renew --quiet --post-hook "cp /etc/letsencrypt/live/${DOMAIN}/fullchain.pem ${DEPLOY_DIR}/ssl/tls.crt && cp /etc/letsencrypt/live/${DOMAIN}/privkey.pem ${DEPLOY_DIR}/ssl/tls.key && docker exec reaages_nginx nginx -s reload"
+  cat > /etc/cron.d/reaages-certbot-renew << CRON
+# Renouvellement auto Let's Encrypt OVH — REAAGES
+# Tous les lundis à 3h (renouvelle si < 30j restants)
+0 3 * * 1 root certbot renew --quiet \
+  --dns-ovh \
+  --dns-ovh-credentials ${OVH_CREDS} \
+  --post-hook "cp /etc/letsencrypt/live/${DOMAIN}/fullchain.pem ${DEPLOY_DIR}/ssl/tls.crt && \
+               cp /etc/letsencrypt/live/${DOMAIN}/privkey.pem ${DEPLOY_DIR}/ssl/tls.key && \
+               docker exec reaages_nginx nginx -s reload"
 CRON
-  chmod 644 "$RENEW_SCRIPT"
-  log "Renouvellement auto configuré dans $RENEW_SCRIPT"
+  chmod 644 /etc/cron.d/reaages-certbot-renew
+  log "Renouvellement automatique configuré (cron hebdo)"
 
-# ── Option B : Auto-signé (dev / test) ───────────────────────
+# ── Option B : Auto-signé ─────────────────────────────────────
 elif [[ "$MODE" == "selfsigned" ]]; then
   warn "Mode : Certificat auto-signé (TEST UNIQUEMENT)"
   warn "Les navigateurs afficheront un avertissement de sécurité."
@@ -103,7 +133,6 @@ elif [[ "$MODE" == "selfsigned" ]]; then
     -out    "$SSL_DIR/tls.crt" \
     -subj   "/C=TN/ST=Tunis/L=Tunis/O=REAAGES/CN=$DOMAIN" \
     -addext "subjectAltName=DNS:$DOMAIN,DNS:www.$DOMAIN"
-
   log "Certificat auto-signé généré (valide 365 jours)"
 
   if [[ ! -f "$SSL_DIR/dhparam.pem" ]]; then
@@ -121,6 +150,7 @@ chmod 644 "$SSL_DIR/tls.crt" "$SSL_DIR/dhparam.pem"
 
 echo ""
 echo "═══════════════════════════════════════════════"
-echo "  Certificats SSL prêts dans : $SSL_DIR"
+echo "  ✅  Certificats SSL prêts dans : $SSL_DIR"
 echo "  🌐  https://$DOMAIN"
+echo "  🔄  Renouvellement automatique actif"
 echo "═══════════════════════════════════════════════"
