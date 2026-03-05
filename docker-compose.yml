@@ -1,0 +1,303 @@
+version: "3.9"
+
+# ================================================================
+#  REAAGES — Stack de Production Sécurisée
+#  Domaine  : reaages.gis-master.com
+#  HTTPS    : port 443  (standard — URL sans port)
+#  HTTP     : port 80   (redirect → HTTPS)
+#  Keycloak : port 8090 (admin localhost uniquement)
+# ================================================================
+
+services:
+
+  # ── PostgreSQL (base principale) ──────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: reaages_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB_FILE:       /run/secrets/pg_db
+      POSTGRES_USER_FILE:     /run/secrets/pg_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_password
+    secrets:
+      - pg_db
+      - pg_user
+      - pg_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    networks:
+      - db_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$(cat /run/secrets/pg_user) -d $$(cat /run/secrets/pg_db)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ── PostgreSQL (base Keycloak) ────────────────────────────
+  keycloak-db:
+    image: postgres:16-alpine
+    container_name: reaages_keycloak_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB_FILE:       /run/secrets/kc_pg_db
+      POSTGRES_USER_FILE:     /run/secrets/kc_pg_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/kc_pg_password
+    secrets:
+      - kc_pg_db
+      - kc_pg_user
+      - kc_pg_password
+    volumes:
+      - keycloak_db_data:/var/lib/postgresql/data
+    networks:
+      - keycloak_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$(cat /run/secrets/kc_pg_user)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "3"
+
+  # ── Keycloak (IAM / Auth) ─────────────────────────────────
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.4
+    container_name: reaages_keycloak
+    restart: unless-stopped
+    command: start
+    environment:
+      KC_DB:                    postgres
+      KC_DB_URL:                jdbc:postgresql://keycloak-db:5432/keycloak
+      KC_DB_USERNAME_FILE:      /run/secrets/kc_pg_user
+      KC_DB_PASSWORD_FILE:      /run/secrets/kc_pg_password
+      KEYCLOAK_ADMIN_FILE:      /run/secrets/kc_admin_user
+      KEYCLOAK_ADMIN_PASSWORD_FILE: /run/secrets/kc_admin_password
+      KC_HOSTNAME:              reaages.gis-master.com
+      KC_HOSTNAME_STRICT:       "true"
+      KC_HTTP_ENABLED:          "false"
+      KC_HTTPS_CERTIFICATE_FILE: /etc/x509/https/tls.crt
+      KC_HTTPS_CERTIFICATE_KEY_FILE: /etc/x509/https/tls.key
+      KC_PROXY:                 edge
+      KC_LOG_LEVEL:             WARN
+      KC_HEALTH_ENABLED:        "true"
+      KC_METRICS_ENABLED:       "false"
+    secrets:
+      - kc_pg_user
+      - kc_pg_password
+      - kc_admin_user
+      - kc_admin_password
+    volumes:
+      - ./ssl/tls.crt:/etc/x509/https/tls.crt:ro
+      - ./ssl/tls.key:/etc/x509/https/tls.key:ro
+      - keycloak_data:/opt/keycloak/data
+    ports:
+      - "127.0.0.1:8090:8080"   # Admin Keycloak — localhost seulement
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+    networks:
+      - keycloak_net
+      - internal_net
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/health/ready || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "15m"
+        max-file: "5"
+
+  # ── Backend Express/Node ──────────────────────────────────
+  backend:
+    build:
+      context: ./app/backend
+      dockerfile: Dockerfile
+      args:
+        NODE_ENV: production
+    container_name: reaages_backend
+    restart: unless-stopped
+    env_file: ./secrets/backend.env
+    environment:
+      NODE_ENV:        production
+      PORT:            3001
+      DB_HOST:         postgres
+      DB_PORT:         5432
+      KEYCLOAK_URL:    http://keycloak:8080
+      KEYCLOAK_REALM:  reaages
+      FRONTEND_URL:    https://reaages.gis-master.com
+    expose:
+      - "3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    networks:
+      - db_net
+      - internal_net
+      - keycloak_net
+    healthcheck:
+      test: ["CMD", "node", "healthcheck.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    read_only: false
+    tmpfs:
+      - /tmp:size=50m
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "15m"
+        max-file: "5"
+
+  # ── Frontend Next.js ──────────────────────────────────────
+  frontend:
+    build:
+      context: ./app/frontend
+      dockerfile: Dockerfile
+      args:
+        NODE_ENV:              production
+        NEXT_PUBLIC_APP_URL:   https://reaages.gis-master.com
+        NEXT_PUBLIC_API_URL:   https://reaages.gis-master.com/api
+    container_name: reaages_frontend
+    restart: unless-stopped
+    env_file: ./secrets/frontend.env
+    environment:
+      NODE_ENV:    production
+      PORT:        3000
+      API_URL:     http://backend:3001
+    expose:
+      - "3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - internal_net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:size=100m
+    deploy:
+      resources:
+        limits:
+          cpus: "1.5"
+          memory: 768M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "15m"
+        max-file: "5"
+
+  # ── Nginx Reverse Proxy ───────────────────────────────────
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: reaages_nginx
+    restart: unless-stopped
+    ports:
+      - "80:8080"      # HTTP  → redirect HTTPS
+      - "443:8443"     # HTTPS principal
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      frontend:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    networks:
+      - internal_net
+      - external_net
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/healthz"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "15m"
+        max-file: "5"
+
+# ── Volumes ───────────────────────────────────────────────────
+volumes:
+  postgres_data:
+    driver: local
+  keycloak_db_data:
+    driver: local
+  keycloak_data:
+    driver: local
+  nginx_logs:
+    driver: local
+
+# ── Réseaux (isolation stricte) ──────────────────────────────
+networks:
+  external_net:
+    driver: bridge
+    name: reaages_external
+  internal_net:
+    driver: bridge
+    internal: true
+    name: reaages_internal
+  db_net:
+    driver: bridge
+    internal: true
+    name: reaages_db
+  keycloak_net:
+    driver: bridge
+    internal: true
+    name: reaages_keycloak
+
+# ── Docker Secrets ────────────────────────────────────────────
+secrets:
+  pg_db:
+    file: ./secrets/pg_db.txt
+  pg_user:
+    file: ./secrets/pg_user.txt
+  pg_password:
+    file: ./secrets/pg_password.txt
+  kc_pg_db:
+    file: ./secrets/kc_pg_db.txt
+  kc_pg_user:
+    file: ./secrets/kc_pg_user.txt
+  kc_pg_password:
+    file: ./secrets/kc_pg_password.txt
+  kc_admin_user:
+    file: ./secrets/kc_admin_user.txt
+  kc_admin_password:
+    file: ./secrets/kc_admin_password.txt
